@@ -49,7 +49,7 @@ void pionek::xy_set(int xw, int yw)
         sprite.setColor(sf::Color(160,82, 45));
     else
         sprite.setColor(sf::Color(255,255, 255));
-
+    ustaw_rodzaj(rod);
 }
 
  void pionek::hide()

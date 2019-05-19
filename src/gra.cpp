@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-gra::gra(kolory kol) :tryb_gry(kol),aktualny_gracz(bialy), ilosc_bialych(12), ilosc_czarnych(12), czy_bylo_bicie(false)
+gra::gra(kolory kol, bool PCt) :tryb_gry(kol),aktualny_gracz(bialy), ilosc_bialych(12), ilosc_czarnych(12), czy_bylo_bicie(false), PC(PCt)
 {
     for(int i=0;i<8;i++)
         for(int j=0;j<8;j++)
@@ -134,6 +134,7 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
     int help_x=x_k;
     int help_y=y_k;
     int help_1=0;
+    int help_2=0;
     /*Sprawdzamy czy ruch z start do konca jest mozliwy. Jesli nie to odrazu false, jesli tak , to ruszamy pionkami za pomoca przesun pionek*/
     //sprawdz czy na tym polu jest juz jakis pionek!!!
     if(tablica_pola[y_k][x_k].zwroc_kolor()!=brak)
@@ -243,6 +244,7 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
         }
         //w ktorym kierunku chce sie poruszac
 
+
         if(((y_k-y_s)==(x_k-x_s))&&y_k<y_s) //czy poruszamy sie po przekatnej gora i lewo
         {
             while(help_x<x_s-1&&help_y<y_s-1&&tablica_pola[help_y+1][help_x+1].zwroc_kolor()==brak) // gora lewo -> szukamy czy znajdziemy pionek
@@ -250,12 +252,14 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                 help_x++;
                 help_y++;
             }
-
-            if(tablica_pola[help_y+1][help_x+1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
+            ///////////////////////////////////////
+            help_1=help_x+1; /////////////////////
+            help_2=help_y+1; ////////////////////   aktualnie rozwazany pionek
+            /////////////////////////////////////
+            if(tablica_pola[help_2][help_1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
             {
                 if(tablica_pola[help_y][help_x].zwroc_kolor()==brak) //jesli poprzednie pole jest puste, pionka mozna zbic
                 {
-                    help_1++; //zwiekszamy ilosc pionkow do zbicia
                     //wiemy ze pionka da sie zbic, co najmniej jednego pionka
 
                     help_x++;
@@ -268,10 +272,16 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                         help_y++;
                     }
 
-                    if(tablica_pola[help_y+1][help_x+1].zwroc_kolor()==brak) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
+                    if(help_x==x_s-1&&help_y==y_s-1) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
                     {
+                        usun_pionek(help_1, help_2);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+
                         przesun_pionek(x_s, y_s, x_k, y_k);
-                        czy_bylo_bicie=false;
+                        czy_bylo_bicie=true;
                         return true;
                     }
                 }
@@ -283,18 +293,21 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
             {
                 help_x--;
                 help_y--;
-            }
 
-            if(tablica_pola[help_y-1][help_x-1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
+            }
+             ///////////////////////////////////////
+            help_1=help_x-1; /////////////////////
+            help_2=help_y-1; ////////////////////   aktualnie rozwazany pionek
+            /////////////////////////////////////
+
+
+            if(tablica_pola[help_2][help_1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
             {
                 if(tablica_pola[help_y][help_x].zwroc_kolor()==brak) //jesli poprzednie pole jest puste, pionka mozna zbic
                 {
-                    help_1--; //zwiekszamy ilosc pionkow do zbicia
                     //wiemy ze pionka da sie zbic, co najmniej jednego pionka
-
                     help_x--;
                     help_y--;
-
                     //szukamy innych pionkow po drodze do naszego celu
                     while(help_x>x_s+1&&help_y>y_s+1&&tablica_pola[help_y-1][help_x-1].zwroc_kolor()==brak) // gora lewo -> szukamy czy znajdziemy pionek
                     {
@@ -302,10 +315,16 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                         help_y--;
                     }
 
-                    if(tablica_pola[help_y-1][help_x-1].zwroc_kolor()==brak) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
+                    if(help_x==x_s+1&&help_y==y_s+1) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
                     {
+                        usun_pionek(help_1, help_2);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+
                         przesun_pionek(x_s, y_s, x_k, y_k);
-                        czy_bylo_bicie=false;
+                        czy_bylo_bicie=true;
                         return true;
                     }
                 }
@@ -318,12 +337,15 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                 help_x--;
                 help_y++;
             }
+            ///////////////////////////////////////
+            help_1=help_x-1; /////////////////////
+            help_2=help_y+1; ////////////////////   aktualnie rozwazany pionek
+            /////////////////////////////////////
 
-            if(tablica_pola[help_y+1][help_x-1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
+            if(tablica_pola[help_2][help_1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
             {
                 if(tablica_pola[help_y][help_x].zwroc_kolor()==brak) //jesli poprzednie pole jest puste, pionka mozna zbic
                 {
-                    help_1++; //zwiekszamy ilosc pionkow do zbicia
                     //wiemy ze pionka da sie zbic, co najmniej jednego pionka
 
                     help_x--;
@@ -336,10 +358,16 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                         help_y++;
                     }
 
-                    if(tablica_pola[help_y+1][help_x-1].zwroc_kolor()==brak) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
+                    if(help_x==x_s+1&&help_y==y_s-1) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
                     {
+                        usun_pionek(help_1, help_2);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+
                         przesun_pionek(x_s, y_s, x_k, y_k);
-                        czy_bylo_bicie=false;
+                        czy_bylo_bicie=true;
                         return true;
                     }
                 }
@@ -352,12 +380,15 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                 help_x++;
                 help_y--;
             }
+            ///////////////////////////////////////
+            help_1=help_x+1; /////////////////////
+            help_2=help_y-1; ////////////////////   aktualnie rozwazany pionek
+            /////////////////////////////////////
 
-            if(tablica_pola[help_y-1][help_x+1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
+            if(tablica_pola[help_2][help_1].zwroc_kolor()!=aktualny_gracz) //jesli znaleziono pionek przeciwnika w gorze i w lewo
             {
                 if(tablica_pola[help_y][help_x].zwroc_kolor()==brak) //jesli poprzednie pole jest puste, pionka mozna zbic
                 {
-                    help_1++; //zwiekszamy ilosc pionkow do zbicia
                     //wiemy ze pionka da sie zbic, co najmniej jednego pionka
 
                     help_x++;
@@ -370,10 +401,16 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                         help_y--;
                     }
 
-                    if(tablica_pola[help_y-1][help_x+1].zwroc_kolor()==brak) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
+                    if(help_x==x_s-1&&help_y==y_s+1) //jesli nie znaleziono pionka na drodze do naszego celu, wykonujemy ruch
                     {
+                        usun_pionek(help_1, help_2);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+
                         przesun_pionek(x_s, y_s, x_k, y_k);
-                        czy_bylo_bicie=false;
+                        czy_bylo_bicie=true;
                         return true;
                     }
                 }
@@ -384,7 +421,7 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
     return false;
 }
 
-bool gra::wybierz_pionek(int xw, int yw)  //dodac wyszukiwanie, czy mozemy wybrac pionek, gdy sa inne do bicia
+bool gra::wybierz_pionek(int xw, int yw)
 {
         //sprawdzic czy mamy jakis pionek z biciem i go zapamietac
         bool moge_zbic=false; //czy moge zbic jaki kolwiek z pionkow
@@ -396,14 +433,12 @@ bool gra::wybierz_pionek(int xw, int yw)  //dodac wyszukiwanie, czy mozemy wybra
                 {
                         if(tablica_pola[i][j].zwroc_kolor()==aktualny_gracz&&czy_mam_bicie(j,i))
                         {
-                            std::cout<<j<<i<<std::endl;
                             if(j==xw&&i==yw) //jesli sprawdzilismy ze nasz pionek moze bic, wybieramy go
                             {
                                 tablica_pola[yw][xw].podnies();
                                 return true;
                             }
                             moge_zbic=true; //moge bic, ale to nie nasz pionek
-                            std::cout<<"tu wypada"<<std::endl;
                             i=8; //lamiemy petle
                             j=8; //lamiemy petle
                         }
@@ -518,68 +553,76 @@ bool gra::czy_mam_bicie(int xw, int yw)
     {
         if(aktualny_gracz==bialy)
         {
-            while(help_x>=2&&help_y>=2&&tablica_pola[help_y-1][help_x-1].zwroc_kolor()==brak) // gora lewo -> szukamy czy znajdziemy pionek
+            if(help_x>=2&&help_y>=2)
             {
-                help_x--;
-                help_y--;
-            }
-
-            if(tablica_pola[help_y-1][help_x-1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y-2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                while(help_x>2&&help_y>2&&tablica_pola[help_y-1][help_x-1].zwroc_kolor()==brak) // gora lewo -> szukamy czy znajdziemy pionek
                 {
-                    return true;
+                    help_x--;
+                    help_y--;
+                }
+
+                if(tablica_pola[help_y-1][help_x-1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
+                {
+                    if(tablica_pola[help_y-2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
                 }
             }
 
             help_x=xw;  //wyzerowanie zmiennych pomocniczych
             help_y=yw;
-
-            while(help_x<=5&&help_y>=2&&tablica_pola[help_y-1][help_x+1].zwroc_kolor()==brak) // gora prawo -> szukamy czy znajdziemy pionek
+            if(help_x<=5&&help_y>=2)
             {
-                help_x++;
-                help_y--;
-            }
-
-            if(tablica_pola[help_y-1][help_x+1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y-2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                while(help_x<5&&help_y>2&&tablica_pola[help_y-1][help_x+1].zwroc_kolor()==brak) // gora prawo -> szukamy czy znajdziemy pionek
                 {
-                    return true;
+                    help_x++;
+                    help_y--;
+                }
+
+                if(tablica_pola[help_y-1][help_x+1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
+                {
+                    if(tablica_pola[help_y-2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
                 }
             }
+            help_x=xw;  //wyzerowanie zmiennych pomocniczych
+            help_y=yw;
+            if(help_x>=2&&help_y<=5)
+            {
+                while(help_x>2&&help_y<5&&tablica_pola[help_y+1][help_x-1].zwroc_kolor()==brak) // dol lewo -> szukamy czy znajdziemy pionek
+                {
+                    help_x--;
+                    help_y++;
+                }
 
+                if(tablica_pola[help_y+1][help_x-1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
+                {
+                    if(tablica_pola[help_y+2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
+                }
+            }
             help_x=xw;  //wyzerowanie zmiennych pomocniczych
             help_y=yw;
 
-            while(help_x>=2&&help_y<=5&&tablica_pola[help_y+1][help_x-1].zwroc_kolor()==brak) // dol lewo -> szukamy czy znajdziemy pionek
+            if(help_x<=5&&help_y<=5)
             {
-                help_x--;
-                help_y++;
-            }
-
-            if(tablica_pola[help_y+1][help_x-1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y+2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                while(help_x<5&&help_y<5&&tablica_pola[help_y+1][help_x+1].zwroc_kolor()==brak) // dol prawo -> szukamy czy znajdziemy pionek
                 {
-                    return true;
+                    help_x++;
+                    help_y++;
                 }
-            }
 
-             help_x=xw;  //wyzerowanie zmiennych pomocniczych
-            help_y=yw;
-
-            while(help_x<=5&&help_y<=5&&tablica_pola[help_y+1][help_x+1].zwroc_kolor()==brak) // dol prawo -> szukamy czy znajdziemy pionek
-            {
-                help_x++;
-                help_y++;
-            }
-
-            if(tablica_pola[help_y+1][help_x+1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y+2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                if(tablica_pola[help_y+1][help_x+1].zwroc_kolor()==czarny) //jesli znaleziono czarny pionek w gorze i w lewo
                 {
-                    return true;
+                    if(tablica_pola[help_y+2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -587,68 +630,79 @@ bool gra::czy_mam_bicie(int xw, int yw)
 
         if(aktualny_gracz==czarny)
         {
-            while(help_x>=2&&help_y>=2&&tablica_pola[help_y-1][help_x-1].zwroc_kolor()==brak) // gora lewo -> szukamy czy znajdziemy pionek
+            if(help_x>=2&&help_y>=2)
             {
-                help_x--;
-                help_y--;
-            }
-
-            if(tablica_pola[help_y-1][help_x-1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y-2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                while(help_x>2&&help_y>2&&tablica_pola[help_y-1][help_x-1].zwroc_kolor()==brak) // gora lewo -> szukamy czy znajdziemy pionek
                 {
-                    return true;
+                    help_x--;
+                    help_y--;
+                }
+
+                if(tablica_pola[help_y-1][help_x-1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
+                {
+                    if(tablica_pola[help_y-2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
+                }
+            }
+            help_x=xw;  //wyzerowanie zmiennych pomocniczych
+            help_y=yw;
+
+
+            if(help_x<=5&&help_y>=2)
+            {
+                while(help_x<5&&help_y>2&&tablica_pola[help_y-1][help_x+1].zwroc_kolor()==brak) // gora prawo -> szukamy czy znajdziemy pionek
+                {
+                    help_x++;
+                    help_y--;
+                }
+
+                if(tablica_pola[help_y-1][help_x+1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
+                {
+                    if(tablica_pola[help_y-2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
+                }
+            }
+            help_x=xw;  //wyzerowanie zmiennych pomocniczych
+            help_y=yw;
+
+            if(help_x>=2&&help_y<=5)
+            {
+                while(help_x>2&&help_y<5&&tablica_pola[help_y+1][help_x-1].zwroc_kolor()==brak) // dol lewo -> szukamy czy znajdziemy pionek
+                {
+                    help_x--;
+                    help_y++;
+                }
+
+                if(tablica_pola[help_y+1][help_x-1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
+                {
+                    if(tablica_pola[help_y+2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
                 }
             }
 
             help_x=xw;  //wyzerowanie zmiennych pomocniczych
             help_y=yw;
 
-            while(help_x<=5&&help_y>=2&&tablica_pola[help_y-1][help_x+1].zwroc_kolor()==brak) // gora prawo -> szukamy czy znajdziemy pionek
+            if(help_x<=5&&help_y<=5)
             {
-                help_x++;
-                help_y--;
-            }
-
-            if(tablica_pola[help_y-1][help_x+1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y-2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                while(help_x<5&&help_y<5&&tablica_pola[help_y+1][help_x+1].zwroc_kolor()==brak) // dol prawo -> szukamy czy znajdziemy pionek
                 {
-                    return true;
+                    help_x++;
+                    help_y++;
                 }
-            }
 
-            help_x=xw;  //wyzerowanie zmiennych pomocniczych
-            help_y=yw;
-
-            while(help_x>=2&&help_y<=5&&tablica_pola[help_y+1][help_x-1].zwroc_kolor()==brak) // dol lewo -> szukamy czy znajdziemy pionek
-            {
-                help_x--;
-                help_y++;
-            }
-
-            if(tablica_pola[help_y+1][help_x-1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y+2][help_x-2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                if(tablica_pola[help_y+1][help_x+1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
                 {
-                    return true;
-                }
-            }
-
-             help_x=xw;  //wyzerowanie zmiennych pomocniczych
-            help_y=yw;
-
-            while(help_x<=5&&help_y<=5&&tablica_pola[help_y+1][help_x+1].zwroc_kolor()==brak) // dol prawo -> szukamy czy znajdziemy pionek
-            {
-                help_x++;
-                help_y++;
-            }
-
-            if(tablica_pola[help_y+1][help_x+1].zwroc_kolor()==bialy) //jesli znaleziono bialy pionek w gorze i w lewo
-            {
-                if(tablica_pola[help_y+2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
-                {
-                    return true;
+                    if(tablica_pola[help_y+2][help_x+2].zwroc_kolor()==brak) //jesli nastepne pole jest puste
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -657,7 +711,67 @@ bool gra::czy_mam_bicie(int xw, int yw)
     return false;
 }
 
+
+void gra::zrob_damki()  //damki zrobie z was
+{
+    if(aktualny_gracz==bialy)
+    {
+        if(tryb_gry==bialy)
+        {
+            for(int j=0;j<8;j++)
+            {
+                if(tablica_pola[0][j].zwroc_kolor()==bialy) //jesli mamy utworzyc damke
+                    zrob_damke(j, 0);
+            }
+        }
+        else
+        {
+            for(int j=0;j<8;j++)
+            {
+                if(tablica_pola[7][j].zwroc_kolor()==bialy) //jesli mamy utworzyc damke
+                    zrob_damke(j, 7);
+            }
+        }
+    }
+
+    if(aktualny_gracz==czarny)
+    {
+        if(tryb_gry==bialy)
+        {
+            for(int j=0;j<8;j++)
+            {
+                if(tablica_pola[7][j].zwroc_kolor()==czarny) //jesli mamy utworzyc damke
+                    zrob_damke(j, 7);
+            }
+        }
+        else
+        {
+            for(int j=0;j<8;j++)
+            {
+                if(tablica_pola[0][j].zwroc_kolor()==czarny) //jesli mamy utworzyc damke
+                    zrob_damke(j, 0);
+            }
+        }
+    }
+
+}
+
 void gra::podnies_pionek(int xw, int yw)
 {
     tablica_pola[yw][xw].podnies();
+}
+
+kolory gra::wygrana()
+{
+    if(ilosc_bialych==0)
+        return czarny;
+    if(ilosc_czarnych==0)
+        return bialy;
+    return brak;
+}
+
+
+int gra::ocena()
+{
+    return ilosc_bialych-ilosc_czarnych;
 }

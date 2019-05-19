@@ -11,6 +11,7 @@ class gra :public sf::Drawable
         pionek tablica_pola[8][8];
         kolory tryb_gry;
         kolory aktualny_gracz;
+        bool PC;
         int ilosc_czarnych;
         int ilosc_bialych;
         bool czy_bylo_bicie;
@@ -23,14 +24,18 @@ class gra :public sf::Drawable
         void zrob_damke(int x_s, int y_s);
         void odstaw_pionek(int xw, int yw);
     public:
-        gra(kolory kol); //bialy -biale na dole
+        gra(kolory kol, bool PCt); //bialy -biale na dole
         ~gra();
+        kolory zwroc_aktualny_gracz(){return aktualny_gracz;};
+        void zrob_damki();
         bool wybierz_pionek(int xw, int yw);
         bool ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic);  //sprawdza czy mozliwy jest ruch na dane pole. jesli tak, to porusza pionkami
         void zmien_gracza();
         bool bicie(){return czy_bylo_bicie;};
         bool czy_mam_bicie(int xw, int yw);
         void podnies_pionek(int xw, int yw);
+        kolory wygrana();
+        int ocena();
 
 };
 

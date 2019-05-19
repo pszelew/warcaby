@@ -4,9 +4,7 @@
 #include "pionek.h"
 #include "plansza.h"
 #include "gra.h"
-#include "mysz.h"
 #include <iostream>
-
 
 
 int main()
@@ -18,12 +16,13 @@ int main()
     sf::RenderWindow window(sf::VideoMode{700,700}, "Warcaby");
 
     plansza plan;
-    gra game(czarny);
+    gra game(bialy, false);
     bool selected=false;
     bool udal_ruch=false;
     bool moge_bic=false;
     bool moge_bic_2=false;
     bool kontynuacja_ruchu=false;
+    kolory wygrana=brak;
     int tab_1[2];  //tablica wybranego pionka
     int tab_2[2];  //tablica pola do postawienia
     sf::Vector2i localPosition;
@@ -43,7 +42,6 @@ int main()
                     while(sf::Mouse::isButtonPressed(sf::Mouse::Left));
                     tab_1[0]=(localPosition.x-30)/80;
                     tab_1[1]=(localPosition.y-30)/80;
-                    std::cout<<"wybrano pierwszy pionek"<<std::endl;
                     if(localPosition.x<=670&&localPosition.x>=30&&localPosition.y<=670&&localPosition.y>=30&&game.wybierz_pionek(tab_1[0], tab_1[1]))  //jesli kliknieto poprawny pionek -> swoj
                     {
                         selected=true;
@@ -56,7 +54,6 @@ int main()
                     while(sf::Mouse::isButtonPressed(sf::Mouse::Left));
                     tab_2[0]=(localPosition.x-30)/80;
                     tab_2[1]=(localPosition.y-30)/80;
-                    std::cout<<"wybrano drugi pionek"<<std::endl;
                     if(localPosition.x<=670&&localPosition.x>=30&&localPosition.y<=670&&localPosition.y>=30)  //jesli kliknieto poprawny pionek -> swoj
                     {
                         moge_bic=game.czy_mam_bicie(tab_1[0], tab_1[1]);
@@ -66,15 +63,15 @@ int main()
                         if(udal_ruch&&!game.bicie()) //gdy nic nie zbilem w tym ruchu
                         {
                             kontynuacja_ruchu=false;
-                            std::cout<<"nic nie zbilem"<<std::endl;
+                            game.zrob_damki();
                             game.zmien_gracza();
-                             selected = false;
+                            selected = false;
 
                         }
                         if(udal_ruch&&game.bicie()&&!moge_bic_2)  //gdy zbilem, ale nie mozna juz bic dalej
                         {
                             kontynuacja_ruchu=false;
-                            std::cout<<"zbilem i nie moge juz dalej bic"<<std::endl;
+                            game.zrob_damki();
                             game.zmien_gracza();
                             selected = false;
                         }
@@ -82,27 +79,31 @@ int main()
                         if(udal_ruch&&game.bicie()&&moge_bic_2)  //gdy zbilem, i mozna isc dalej
                         {
                             kontynuacja_ruchu=true;
-                            std::cout<<"zbilem i moge dalej bic"<<std::endl;
                             tab_1[0]=tab_2[0];  //zmien pionek odniesienia na planszy -> nim bedziemy bic
                             tab_1[1]=tab_2[1];  //zmien pionek odniesienia na planszy -> nim bedziemy bic
                             game.podnies_pionek(tab_2[0], tab_2[1]); //tylko podnosze go do gory, nie sprawdzam juz czy mozna go wybrac
                         }
                         if(!udal_ruch&&!kontynuacja_ruchu)  //gdy nie ruszylem sie i nie kontynuujemy ruchu
                         {
-                            std::cout<<"zly ruch"<<std::endl;
                             selected = false;
                         }
-
                         if(!udal_ruch&&kontynuacja_ruchu)  //gdy nie ruszylem sie, ale kontynuujemy ruch bicia
                         {
-                            std::cout<<"zle, ale kontynuujemy bicie"<<std::endl;
                             game.podnies_pionek(tab_1[0], tab_1[1]); //podnies pionek startowy
                         }
                     }
                 }
-
+                 if(game.wygrana()==czarny)
+                 {
+                    std::cout<<"czarny wygral";
+                    window.close();
+                 }
+                 if(game.wygrana()==bialy)
+                 {
+                    std::cout<<"bialy wygral";
+                    window.close();
+                 }
             }
-
             window.draw(plan);
             window.draw(game);
             window.display();
