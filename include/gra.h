@@ -36,6 +36,7 @@ class gra :public sf::Drawable
         void podnies_pionek(int xw, int yw);
         kolory wygrana();
         int ocena();
+        bool zwroc_PC(){return PC;};
 
 };
 

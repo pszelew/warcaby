@@ -12,15 +12,13 @@ struct parametry_ruchu
 class bot
 {
     private:
-        int max_depth = 3;
+        int max_depth = 1;
+        kolory kolor_bota;
         int minimax(gra game, int depth);
     public:
-        int x_s;
-        int y_s;
-        int x_k;
-        int y_k;
-        bot();
+        bot(kolory kol){kolor_bota=kol;};
         virtual ~bot();
+        kolory zwroc_kolor_bota(){return kolor_bota;};
         std::vector<parametry_ruchu> ruch(gra game);  //funkcja zwraca optymalny ruch, jaki wykonuje komputer. Pobiera aktualny stan gry
 };
 

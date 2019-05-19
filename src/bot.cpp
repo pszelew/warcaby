@@ -1,11 +1,7 @@
 #include "bot.h"
 #include <queue>
 #include <limits.h>
-bot::bot()
-{
-    //ctor
-}
-
+#include <iostream>
 bot::~bot()
 {
     //dtor
@@ -181,15 +177,15 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                     i_temp=i;
                     j_temp=j;
                     //tym pionkiem mozemy wykonac jakis ruch, teraz wystarczy sie dowiedziec jaki
-                    for(int x=0;x<8;x++)
-                    {                      //sprawdzamy wszystkie mozliwosci gdzie taki pionek moze trafic
+                    for(int x=0;x<8;x++)  //sprawdzamy wszystkie mozliwosci gdzie taki pionek moze trafic
+                    {
+                        moge_bic=game_2.czy_mam_bicie(j_temp, i_temp);
                         for(int y=0;y<8;y++)
                         {
                             if(!kontynuacja_ruchu)
                             {
                                 game_2=game;
                             }
-                            moge_bic=game_2.czy_mam_bicie(j_temp, i_temp);
                             udal_ruch=game_2.ruch(j_temp, i_temp, y, x, moge_bic);
                             moge_bic_2=game_2.czy_mam_bicie(x, y);
                             if(udal_ruch&&!game_2.bicie()) //gdy nic nie zbilem w tym ruchu
@@ -197,7 +193,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                 kontynuacja_ruchu=false;
                                 game_2.zrob_damki();
                                 game_2.zmien_gracza();
-                                ocena=minimax(game_2, depth-1);
+                                ocena=minimax(game_2, depth);
                                 max_ocena=std::max(max_ocena, ocena);
                                 if(max_ocena==ocena) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                 {
@@ -214,7 +210,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                             {
                                 game_2.zrob_damki();
                                 game_2.zmien_gracza();
-                                ocena=minimax(game_2, depth-1);
+                                ocena=minimax(game_2, depth);
                                 max_ocena=std::max(max_ocena, ocena);
                                 if(max_ocena==ocena) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                 {
@@ -256,26 +252,27 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
         return dziecko;
     }
 
-    if(game_2.zwroc_aktualny_gracz()==czarny) //jesli aktualmym graczem jest czarny
+    if(game_2.zwroc_aktualny_gracz()==czarny) //jesli aktualnym graczem jest czarny
     {
         for(int i=0;i<8;i++)
         {
             for(int j=0;j<8;j++)
             {
+                 std::cout<<"tak";
                 if(game_2.wybierz_pionek(j, i))
                 {
                     i_temp=i;
                     j_temp=j;
                     //tym pionkiem mozemy wykonac jakis ruch, teraz wystarczy sie dowiedziec jaki
-                    for(int x=0;x<8;x++)
-                    {                      //sprawdzamy wszystkie mozliwosci gdzie taki pionek moze trafic
+                    for(int x=0;x<8;x++)  //sprawdzamy wszystkie mozliwosci gdzie taki pionek moze trafic
+                    {
+                        moge_bic=game_2.czy_mam_bicie(j_temp, i_temp);
                         for(int y=0;y<8;y++)
                         {
                             if(!kontynuacja_ruchu)
                             {
                                 game_2=game;
                             }
-                            moge_bic=game_2.czy_mam_bicie(j_temp, i_temp);
                             udal_ruch=game_2.ruch(j_temp, i_temp, y, x, moge_bic);
                             moge_bic_2=game_2.czy_mam_bicie(x, y);
                             if(udal_ruch&&!game_2.bicie()) //gdy nic nie zbilem w tym ruchu
@@ -283,7 +280,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                 kontynuacja_ruchu=false;
                                 game_2.zrob_damki();
                                 game_2.zmien_gracza();
-                                ocena=minimax(game_2, depth-1);
+                                ocena=minimax(game_2, depth);
                                 min_ocena=std::min(min_ocena, ocena);
                                 if(min_ocena==ocena) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                 {
@@ -300,7 +297,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                             {
                                 game_2.zrob_damki();
                                 game_2.zmien_gracza();
-                                ocena=minimax(game_2, depth-1);
+                                ocena=minimax(game_2, depth);
                                 min_ocena=std::min(min_ocena, ocena);
                                 if(min_ocena==ocena) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                 {

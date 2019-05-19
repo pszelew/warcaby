@@ -4,8 +4,8 @@
 #include "pionek.h"
 #include "plansza.h"
 #include "gra.h"
+#include "bot.h"
 #include <iostream>
-
 
 int main()
 {
@@ -16,16 +16,20 @@ int main()
     sf::RenderWindow window(sf::VideoMode{700,700}, "Warcaby");
 
     plansza plan;
-    gra game(bialy, false);
     bool selected=false;
     bool udal_ruch=false;
     bool moge_bic=false;
     bool moge_bic_2=false;
     bool kontynuacja_ruchu=false;
     kolory wygrana=brak;
+
+    bot bot_warcaby(czarny);
+    gra game(bialy, true); //gra bez bota
+
     int tab_1[2];  //tablica wybranego pionka
     int tab_2[2];  //tablica pola do postawienia
     sf::Vector2i localPosition;
+    std::vector<parametry_ruchu> lista_ruchow;
 
     while(window.isOpen())
     {
@@ -36,6 +40,20 @@ int main()
                             window.close();
                 if(zdarzenie.type==sf::Event::Closed)
                             window.close();
+
+                if(game.zwroc_PC()&&game.zwroc_aktualny_gracz()==bot_warcaby.zwroc_kolor_bota()) //jesli gramy z botem i jest ruch bota
+                {
+                    lista_ruchow=bot_warcaby.ruch(game);
+
+                    for( size_t i = 0; i < lista_ruchow.size(); i++ )
+                    {
+                        moge_bic=game.czy_mam_bicie(lista_ruchow[i].x_s, lista_ruchow[i].y_s);
+                        game.ruch(lista_ruchow[i].x_s, lista_ruchow[i].y_s, lista_ruchow[i].x_k, lista_ruchow[i].y_k, moge_bic);
+                    }
+                    game.zrob_damki();
+                    game.zmien_gracza();
+                }
+
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Left)&&!selected)
                 {
                     localPosition=sf::Mouse::getPosition(window);
