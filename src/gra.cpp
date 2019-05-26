@@ -140,7 +140,7 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
     if(tablica_pola[y_k][x_k].zwroc_kolor()!=brak)
     {
         tablica_pola[y_s][x_s].upusc();
-        return false;
+            return false;
     }
 
     if(tablica_pola[y_s][x_s].zwroc_rodzaj()==zwykly)
@@ -166,67 +166,133 @@ bool gra::ruch(int x_s, int y_s, int x_k, int y_k, bool moge_bic)  //tu sie bedz
                 tablica_pola[y_s][x_s].upusc();
                 return false;
             }
-
-            //BICIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa
-            if((x_k==x_s-2&&y_k==y_s-2)) //jesli ruszamy do gory i w lewo
+            if(aktualny_gracz==bialy)
             {
-                if(tablica_pola[y_s-1][x_s-1].zwroc_kolor()!=aktualny_gracz) //jesli mozliwosc bicia w danym kierunku
+                if((x_k==x_s-2&&y_k==y_s-2)) //jesli ruszamy do gory i w lewo
                 {
-                    usun_pionek(x_s-1, y_s-1);   //usun zbity pionek
-                    if(aktualny_gracz==bialy)
-                        ilosc_czarnych--;
-                    else
-                        ilosc_bialych--;
+                    if(tablica_pola[y_s-1][x_s-1].zwroc_kolor()==czarny) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s-1, y_s-1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
 
-                    przesun_pionek(x_s, y_s, x_k, y_k);
-                    czy_bylo_bicie=true;
-                    return true;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
+                }
+
+                if((x_k==x_s+2&&y_k==y_s-2)) //jesli ruszamy do gory i w prawo
+                {
+                    if(tablica_pola[y_s-1][x_s+1].zwroc_kolor()==czarny) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s+1, y_s-1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
+                }
+
+                if((x_k==x_s+2&&y_k==y_s+2)) //jesli ruszamy w dol i w prawo
+                {
+                    if(tablica_pola[y_s+1][x_s+1].zwroc_kolor()==czarny) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s+1, y_s+1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
+                }
+
+
+                if((x_k==x_s-2&&y_k==y_s+2)) //jesli ruszamy w dol i w lewo
+                {
+                    if(tablica_pola[y_s+1][x_s-1].zwroc_kolor()==czarny) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s-1, y_s+1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
                 }
             }
 
-            if((x_k==x_s+2&&y_k==y_s-2)) //jesli ruszamy do gory i w prawo
+            if(aktualny_gracz==czarny)
             {
-                if(tablica_pola[y_s-1][x_s+1].zwroc_kolor()!=aktualny_gracz) //jesli mozliwosc bicia w danym kierunku
+                if((x_k==x_s-2&&y_k==y_s-2)) //jesli ruszamy do gory i w lewo
                 {
-                    usun_pionek(x_s+1, y_s-1);   //usun zbity pionek
-                    if(aktualny_gracz==bialy)
-                        ilosc_czarnych--;
-                    else
-                        ilosc_bialych--;
-                    przesun_pionek(x_s, y_s, x_k, y_k);
-                    czy_bylo_bicie=true;
-                    return true;
+                    if(tablica_pola[y_s-1][x_s-1].zwroc_kolor()==bialy) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s-1, y_s-1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
                 }
-            }
 
-            if((x_k==x_s+2&&y_k==y_s+2)) //jesli ruszamy w dol i w prawo
-            {
-                if(tablica_pola[y_s+1][x_s+1].zwroc_kolor()!=aktualny_gracz) //jesli mozliwosc bicia w danym kierunku
+                if((x_k==x_s+2&&y_k==y_s-2)) //jesli ruszamy do gory i w prawo
                 {
-                    usun_pionek(x_s+1, y_s+1);   //usun zbity pionek
-                    if(aktualny_gracz==bialy)
-                        ilosc_czarnych--;
-                    else
-                        ilosc_bialych--;
-                    przesun_pionek(x_s, y_s, x_k, y_k);
-                    czy_bylo_bicie=true;
-                    return true;
+                    if(tablica_pola[y_s-1][x_s+1].zwroc_kolor()==bialy) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s+1, y_s-1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
                 }
-            }
 
-
-            if((x_k==x_s-2&&y_k==y_s+2)) //jesli ruszamy w dol i w lewo
-            {
-                if(tablica_pola[y_s+1][x_s-1].zwroc_kolor()!=aktualny_gracz) //jesli mozliwosc bicia w danym kierunku
+                if((x_k==x_s+2&&y_k==y_s+2)) //jesli ruszamy w dol i w prawo
                 {
-                    usun_pionek(x_s-1, y_s+1);   //usun zbity pionek
-                    if(aktualny_gracz==bialy)
-                        ilosc_czarnych--;
-                    else
-                        ilosc_bialych--;
-                    przesun_pionek(x_s, y_s, x_k, y_k);
-                    czy_bylo_bicie=true;
-                    return true;
+                    if(tablica_pola[y_s+1][x_s+1].zwroc_kolor()==bialy) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s+1, y_s+1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
+                }
+
+
+                if((x_k==x_s-2&&y_k==y_s+2)) //jesli ruszamy w dol i w lewo
+                {
+                    if(tablica_pola[y_s+1][x_s-1].zwroc_kolor()==bialy) //jesli mozliwosc bicia w danym kierunku
+                    {
+                        usun_pionek(x_s-1, y_s+1);   //usun zbity pionek
+                        if(aktualny_gracz==bialy)
+                            ilosc_czarnych--;
+                        else
+                            ilosc_bialych--;
+                        przesun_pionek(x_s, y_s, x_k, y_k);
+                        czy_bylo_bicie=true;
+                        return true;
+                    }
                 }
             }
     }
@@ -456,7 +522,6 @@ bool gra::wybierz_pionek(int xw, int yw)
                     tablica_pola[yw][xw].podnies();
                     return true;
                 }
-
             }
             //jesli znaleziono pionki ktorymi mozna bic -> sprawdzamy czy nasz pionek nalezy
         }

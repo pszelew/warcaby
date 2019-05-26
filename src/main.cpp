@@ -43,15 +43,16 @@ int main()
 
                 if(game.zwroc_PC()&&game.zwroc_aktualny_gracz()==bot_warcaby.zwroc_kolor_bota()) //jesli gramy z botem i jest ruch bota
                 {
-                    lista_ruchow=bot_warcaby.ruch(game);
-
-                    for( size_t i = 0; i < lista_ruchow.size(); i++ )
+                    lista_ruchow=bot_warcaby.ruch(game);  //wykonuje puste ruchy
+                    for( int i = 0; i < lista_ruchow.size() ; i++ )
                     {
                         moge_bic=game.czy_mam_bicie(lista_ruchow[i].x_s, lista_ruchow[i].y_s);
                         game.ruch(lista_ruchow[i].x_s, lista_ruchow[i].y_s, lista_ruchow[i].x_k, lista_ruchow[i].y_k, moge_bic);
+                        std::cout<<lista_ruchow[i].x_s<<", "<<lista_ruchow[i].y_s<<" <- Wykonalem ruch ->"<<lista_ruchow[i].x_k<<", "<<lista_ruchow[i].y_k<<std::endl;
                     }
                     game.zrob_damki();
                     game.zmien_gracza();
+
                 }
 
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Left)&&!selected)
@@ -121,10 +122,13 @@ int main()
                     std::cout<<"bialy wygral";
                     window.close();
                  }
+
+                    window.draw(plan);
+                    window.draw(game);
+                    window.display();
             }
-            window.draw(plan);
-            window.draw(game);
-            window.display();
+
+
         }
     return 0;
 }

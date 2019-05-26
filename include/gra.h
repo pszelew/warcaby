@@ -37,6 +37,7 @@ class gra :public sf::Drawable
         kolory wygrana();
         int ocena();
         bool zwroc_PC(){return PC;};
+        rodzaj zwroc_rodzaj(int xw, int yw){return tablica_pola[yw][xw].zwroc_rodzaj();};
 
 };
 
