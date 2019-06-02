@@ -6,11 +6,12 @@
 #include "gra.h"
 #include "bot.h"
 #include <iostream>
+#include <windows.h>
 
 int main()
 {
     sf::Music music;
-    if (!music.openFromFile( "sound/Clutch.wav"))
+    if (!music.openFromFile( "sound/song_1.wav"))
         return -1; // error
     music.play();
     sf::RenderWindow window(sf::VideoMode{700,700}, "Warcaby");
@@ -23,13 +24,18 @@ int main()
     bool kontynuacja_ruchu=false;
     kolory wygrana=brak;
 
-    bot bot_warcaby(czarny);
+    bot bot_warcaby(bialy);
     gra game(bialy, true); //gra bez bota
 
     int tab_1[2];  //tablica wybranego pionka
     int tab_2[2];  //tablica pola do postawienia
     sf::Vector2i localPosition;
     std::vector<parametry_ruchu> lista_ruchow;
+
+    window.draw(plan);
+    window.draw(game);
+    window.display();
+
 
     while(window.isOpen())
     {
@@ -48,8 +54,20 @@ int main()
                     {
                         moge_bic=game.czy_mam_bicie(lista_ruchow[i].x_s, lista_ruchow[i].y_s);
                         game.ruch(lista_ruchow[i].x_s, lista_ruchow[i].y_s, lista_ruchow[i].x_k, lista_ruchow[i].y_k, moge_bic);
+
+                        window.draw(game);
+                        window.display();
                         std::cout<<lista_ruchow[i].x_s<<", "<<lista_ruchow[i].y_s<<" <- Wykonalem ruch ->"<<lista_ruchow[i].x_k<<", "<<lista_ruchow[i].y_k<<std::endl;
+                        if(i<lista_ruchow.size()-1)
+                            Sleep(1000);
                     }
+                    std::cout<<"Liczba bialych "<< game.zwroc_ilosc_bialych()<<std::endl;
+                    std::cout<<"Liczba czarnych "<< game.zwroc_ilosc_czarnych()<<std::endl;
+                    window.draw(plan);
+                    window.draw(game);
+                    window.display();
+
+
                     game.zrob_damki();
                     game.zmien_gracza();
 
@@ -127,8 +145,6 @@ int main()
                     window.draw(game);
                     window.display();
             }
-
-
         }
     return 0;
 }

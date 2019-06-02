@@ -38,6 +38,8 @@ class gra :public sf::Drawable
         int ocena();
         bool zwroc_PC(){return PC;};
         rodzaj zwroc_rodzaj(int xw, int yw){return tablica_pola[yw][xw].zwroc_rodzaj();};
+        int zwroc_ilosc_bialych() const {return ilosc_bialych;};
+        int zwroc_ilosc_czarnych() const {return ilosc_czarnych;};
 
 };
 

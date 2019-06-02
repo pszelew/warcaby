@@ -838,5 +838,5 @@ kolory gra::wygrana()
 
 int gra::ocena()
 {
-    return ilosc_bialych-ilosc_czarnych;
+        return ilosc_bialych-ilosc_czarnych;
 }
