@@ -12,8 +12,11 @@ class gra :public sf::Drawable
         kolory tryb_gry;
         kolory aktualny_gracz;
         bool PC;
+        bool human;
         int ilosc_czarnych;
         int ilosc_bialych;
+        int ilosc_damek_czarnych;
+        int ilosc_damek_bialych;
         bool czy_bylo_bicie;
         void draw(sf::RenderTarget& target, sf::RenderStates state) const override;
         bool pole_wolne(int xw, int yw); //sprawdza czy pole jest wolne
@@ -37,9 +40,13 @@ class gra :public sf::Drawable
         kolory wygrana();
         int ocena();
         bool zwroc_PC(){return PC;};
+        void set_PC(bool pc){PC=pc;};
+        bool zwroc_human(){return human;};
+        void set_human(bool pc){human=pc;};
         rodzaj zwroc_rodzaj(int xw, int yw){return tablica_pola[yw][xw].zwroc_rodzaj();};
         int zwroc_ilosc_bialych() const {return ilosc_bialych;};
         int zwroc_ilosc_czarnych() const {return ilosc_czarnych;};
+        sf::Vector2i wybierz_pole(sf::RenderWindow &window, sf::Vector2i wektor);
 
 };
 

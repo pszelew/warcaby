@@ -8,9 +8,8 @@ bot::~bot()
 }
 
 
-int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -czy maksymalizujemy bialego czy czarnego
+int bot::minimax(gra game, int alpha, int beta, int depth)  //gra przechowuje stan planszy, kolory -czy maksymalizujemy bialego czy czarnego
 {
-    std::cout<<"mini"<<std::endl;
     int max_ocena=INT_MIN;
     int min_ocena=INT_MAX;
     int ocena;
@@ -21,7 +20,6 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
     int i_temp;
     int j_temp;
     gra game_2=game;
-    parametry_ruchu temp;
 
     /////////Sprawdzamy czy wygrana/////////////////
     ////////////////////////////////////////////////
@@ -74,11 +72,27 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                     {
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth-1);
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
                                         if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                        {
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return max_ocena;
+                                            }
+                                        }
                                         if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
                                             min_ocena=std::min(min_ocena, ocena); //jesli gramy jako
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+
+                                                return min_ocena;
+                                            }
+                                        }
+
                                         kontynuacja_ruchu=false;
                                     }
 
@@ -88,14 +102,6 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
 									if(udal_ruch&&moge_bic_2)
                                     while(game_2.bicie()&&moge_bic_2)  //dopoki zbilem, i mozna isc dalej i sie nie wracam  //gdy zbilem, i mozna isc dalej
                                     {
-										if(kontynuacja_ruchu==false) //gdy wchodze pierwszy raz do petli bicia seryjnego
-                                        {
-                                            temp.x_s=j_temp-y;  //dodajemy do stosu ruch prowadzacy do tego punktu
-                                            temp.y_s=i_temp-x;
-                                            temp.x_k=j_temp;
-                                            temp.y_k=i_temp;
-                                        }
-
 										for(int k=-2;k<=2;k=k+4)
                                         {
                                             for(int l=-2;l<=2;l=l+4)
@@ -113,36 +119,29 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                                 {
                                                     game_2.zrob_damki();
                                                     game_2.zmien_gracza();
-                                                    ocena=minimax(game_2, depth-1);
+                                                    ocena=minimax(game_2, alpha,  beta, depth-1);
                                                     if(game.zwroc_aktualny_gracz()==bialy)
-                                                        max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                                    {
+                                                        max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
+                                                        alpha=std::max(alpha, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            return max_ocena;
+                                                        }
+                                                    }
                                                     if(game.zwroc_aktualny_gracz()==czarny)
-                                                        min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                                    if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                                     {
-                                                        temp.x_s=j_temp;
-                                                        temp.y_s=i_temp;
-                                                        temp.x_k=j_temp+l;
-                                                        temp.y_k=i_temp+k;
-                                                        kontynuacja_ruchu=false;
+                                                        min_ocena=std::min(min_ocena, ocena); //jesli gramy jako
+                                                        beta=std::min(beta, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            return min_ocena;
+                                                        }
                                                     }
-                                                    if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
-                                                    {
-                                                        temp.x_s=j_temp;
-                                                        temp.y_s=i_temp;
-                                                        temp.x_k=j_temp+l;
-                                                        temp.y_k=i_temp+k;
-                                                        kontynuacja_ruchu=false;
-                                                    }
+                                                    kontynuacja_ruchu=false;
                                                 }
                                                 if(moge_bic_2&&udal_ruch) //jesli jeszze moge bic i ruch sie udal
                                                 {
-                                                    temp.x_s=j_temp;
-                                                    temp.y_s=i_temp;
-                                                    temp.x_k=j_temp+l;
-                                                    temp.y_k=i_temp+k;
-                                                    i_temp=i_temp+k;
-                                                    j_temp=j_temp+l;
                                                     kontynuacja_ruchu=true;
                                                 }
                                             }
@@ -166,26 +165,26 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                         kontynuacja_ruchu=false;
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth-1);
-                                        if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
+                                         if(game.zwroc_aktualny_gracz()==bialy)
+                                        {
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return max_ocena;
+                                            }
+                                        }
                                         if(game.zwroc_aktualny_gracz()==czarny)
-                                            min_ocena=std::min(min_ocena, ocena);
+                                        {
+                                            min_ocena=std::min(min_ocena, ocena); //jesli gramy jako
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return min_ocena;
+                                            }
+                                        }
 
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
-                                        {
-                                            temp.x_s=j_temp;
-                                            temp.y_s=i_temp;
-                                            temp.x_k=j_temp+y;
-                                            temp.y_k=i_temp+x;
-                                        }
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
-                                        {
-                                            temp.x_s=j_temp;
-                                            temp.y_s=i_temp;
-                                            temp.x_k=j_temp+y;
-                                            temp.y_k=i_temp+x;
-                                        }
                                     }
                             }
                         }
@@ -225,27 +224,26 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                     {
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth-1);
-                                        if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
-                                        if(game.zwroc_aktualny_gracz()==czarny)
-                                            min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
+                                         if(game.zwroc_aktualny_gracz()==bialy)
                                         {
-                                            temp.x_s=j_temp;
-                                            temp.y_s=i_temp;
-                                            temp.x_k=j_temp+y;
-                                            temp.y_k=i_temp+x;
-
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                std::cout<<max_ocena<<std::endl;
+                                                return max_ocena;
+                                            }
                                         }
-
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(game.zwroc_aktualny_gracz()==czarny)
                                         {
-                                            temp.x_s=j_temp;
-                                            temp.y_s=i_temp;
-                                            temp.x_k=j_temp+y;
-                                            temp.y_k=i_temp+x;
-
+                                            min_ocena=std::min(min_ocena, ocena); //jesli gramy jako
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                std::cout<<min_ocena<<std::endl;
+                                                return min_ocena;
+                                            }
                                         }
                                         kontynuacja_ruchu=false;
                                     }
@@ -257,14 +255,6 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                     while(game_2.bicie()&&moge_bic_2)  //dopoki zbilem, i mozna isc dalej i sie nie wracam
                                     {
                                         std::cout<<"Ruch sie udal i mozna kontynuowac"<<std::endl;
-                                        if(kontynuacja_ruchu==false) //gdy wchodze pierwszy raz do petli bicia seryjnego
-                                        {
-
-                                            temp.x_s=j_temp-y;  //dodajemy do stosu ruch prowadzacy do tego punktu
-                                            temp.y_s=i_temp-x;
-                                            temp.x_k=j_temp;
-                                            temp.y_k=i_temp;
-                                        }
                                                                             //musimy dodac udany ruch
                                         for(int k=-7;k<=7;k++)
                                         {
@@ -283,37 +273,31 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                                 {
                                                     game_2.zrob_damki();
                                                     game_2.zmien_gracza();
-                                                    ocena=minimax(game_2, depth-1);
-                                                    if(game.zwroc_aktualny_gracz()==bialy)
-                                                        max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
-                                                    else
-                                                        min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                                    if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                                    ocena=minimax(game_2, alpha,  beta, depth-1);
+                                                     if(game.zwroc_aktualny_gracz()==bialy)
                                                     {
-                                                        temp.x_s=j_temp;
-                                                        temp.y_s=i_temp;
-                                                        temp.x_k=j_temp+l;
-                                                        temp.y_k=i_temp+k;
-                                                        kontynuacja_ruchu=false;
+                                                        max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
+                                                        alpha=std::max(alpha, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            std::cout<<max_ocena<<std::endl;
+                                                            return max_ocena;
+                                                        }
                                                     }
-                                                    if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                                    if(game.zwroc_aktualny_gracz()==czarny)
                                                     {
-                                                        temp.x_s=j_temp;
-                                                        temp.y_s=i_temp;
-                                                        temp.x_k=j_temp+l;
-                                                        temp.y_k=i_temp+k;
-                                                        kontynuacja_ruchu=false;
+                                                        min_ocena=std::min(min_ocena, ocena); //jesli gramy jako
+                                                        beta=std::min(beta, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            std::cout<<min_ocena<<std::endl;
+                                                            return min_ocena;
+                                                        }
                                                     }
                                                 }
 
                                                 if(moge_bic_2&&udal_ruch) //jesli jeszze moge bic i ruch sie udal
                                                 {
-                                                    temp.x_s=j_temp;
-                                                    temp.y_s=i_temp;
-                                                    temp.x_k=j_temp+l;
-                                                    temp.y_k=i_temp+k;
-                                                    i_temp=i_temp+k;
-                                                    j_temp=j_temp+l;
                                                     kontynuacja_ruchu=true;
                                                 }
 
@@ -345,27 +329,29 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
                                         kontynuacja_ruchu=false;
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth-1);
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
 
-                                        if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
-                                        else
-                                            min_ocena=std::min(min_ocena, ocena);
+                                         if(game.zwroc_aktualny_gracz()==bialy)
+                                        {
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                std::cout<<max_ocena<<std::endl;
+                                                return max_ocena;
+                                            }
+                                        }
+                                        if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
+                                            min_ocena=std::min(min_ocena, ocena); //jesli gramy jako
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                std::cout<<min_ocena<<std::endl;
+                                                return min_ocena;
+                                            }
+                                        }
 
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
-                                        {
-                                            temp.x_s=j_temp;
-                                            temp.y_s=i_temp;
-                                            temp.x_k=j_temp+y;
-                                            temp.y_k=i_temp+x;
-                                        }
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
-                                        {
-                                            temp.x_s=j_temp;
-                                            temp.y_s=i_temp;
-                                            temp.x_k=j_temp+y;
-                                            temp.y_k=i_temp+x;
-                                        }
                                     }
                                 }
                         }
@@ -374,14 +360,19 @@ int bot::minimax(gra game, int depth)  //gra przechowuje stan planszy, kolory -c
             }
         }
         if(game.zwroc_aktualny_gracz()==bialy)
+        {
             return max_ocena;
+        }
         else
+        {
             return min_ocena;
+        }
+
 }
 
 
 
-std::vector<parametry_ruchu> bot::ruch(gra game)
+std::vector<parametry_ruchu> bot::ruch(gra game, int alpha, int beta)
 {
     int max_ocena=INT_MIN;
     int min_ocena=INT_MAX;
@@ -445,12 +436,17 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                     {
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth);
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
+
                                         if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                        {
+                                            max_ocena=std::max(max_ocena, ocena);//jesli gramy jako bialy
+                                        }
                                         if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
                                             min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        }
+                                        if(min_ocena==ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -469,8 +465,9 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             }
                                         }
 
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(max_ocena==ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
+
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
                                             temp.x_k=j_temp+y;
@@ -487,7 +484,27 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                 dziecko=dziecko_temp;
                                             }
                                         }
+
                                         kontynuacja_ruchu=false;
+
+                                        if(game.zwroc_aktualny_gracz()==bialy)
+                                        {
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
+                                        }
+
+                                        if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
+                                        }
+
                                     }
 
                                     j_temp=j_temp+y;
@@ -496,7 +513,6 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                     if(udal_ruch&&moge_bic_2)
                                     while(game_2.bicie()&&moge_bic_2)  //dopoki zbilem, i mozna isc dalej i sie nie wracam
                                     {
-                                        std::cout<<"Ruch sie udal i mozna kontynuowac"<<std::endl;
                                         if(kontynuacja_ruchu==false) //gdy wchodze pierwszy raz do petli bicia seryjnego
                                         {
                                             dziecko_temp.clear();
@@ -524,12 +540,12 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                 {
                                                     game_2.zrob_damki();
                                                     game_2.zmien_gracza();
-                                                    ocena=minimax(game_2, depth);
+                                                    ocena=minimax(game_2, alpha, beta, depth-1);
                                                     if(game.zwroc_aktualny_gracz()==bialy)
-                                                        max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                                        max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
                                                     if(game.zwroc_aktualny_gracz()==czarny)
                                                         min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                                    if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                                    if(min_ocena==ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                                     {
                                                         temp.x_s=j_temp;
                                                         temp.y_s=i_temp;
@@ -539,7 +555,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                         dziecko=dziecko_temp;
                                                         kontynuacja_ruchu=false;
                                                     }
-                                                    if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                                    if(max_ocena==ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                                     {
                                                         temp.x_s=j_temp;
                                                         temp.y_s=i_temp;
@@ -548,6 +564,26 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                         dziecko_temp.push_back(temp); //dodaj parametry do naszego dziecka
                                                         dziecko=dziecko_temp;
                                                         kontynuacja_ruchu=false;
+                                                    }
+
+                                                    if(game.zwroc_aktualny_gracz()==bialy)
+                                                    {
+                                                        alpha=std::max(alpha, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            std::cout<<"Maksymalna ocena:"<<max_ocena<<std::endl;
+                                                            return dziecko;
+                                                        }
+                                                    }
+
+                                                    if(game.zwroc_aktualny_gracz()==czarny)
+                                                    {
+                                                        beta=std::min(beta, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            std::cout<<"Minimalna ocena:"<<min_ocena<<std::endl;
+                                                            return dziecko;
+                                                        }
                                                     }
                                                 }
 
@@ -591,14 +627,14 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                         kontynuacja_ruchu=false;
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth);
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
 
                                         if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
                                         if(game.zwroc_aktualny_gracz()==czarny)
                                             min_ocena=std::min(min_ocena, ocena);
 
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(min_ocena==ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -607,7 +643,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             dziecko.clear();  //bo to zupelnie nowe dziecko na 100%
                                             dziecko.push_back(temp); //dodaj parametry do naszego dziecka
                                         }
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(max_ocena==ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -615,6 +651,24 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             temp.y_k=i_temp+x;
                                             dziecko.clear();  //bo to zupelnie nowe dziecko na 100%
                                             dziecko.push_back(temp); //dodaj parametry do naszego dziecka
+                                        }
+
+                                        if(game.zwroc_aktualny_gracz()==bialy)
+                                        {
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
+                                        }
+
+                                        if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
                                         }
                                     }
                                 }
@@ -654,12 +708,12 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                     {
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth);
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
                                         if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
                                         if(game.zwroc_aktualny_gracz()==czarny)
                                             min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(min_ocena==ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -678,7 +732,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             }
                                         }
 
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(max_ocena==ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -697,6 +751,25 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             }
                                         }
                                         kontynuacja_ruchu=false;
+
+                                        if(game.zwroc_aktualny_gracz()==bialy)
+                                        {
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
+                                        }
+
+                                        if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
+                                        }
+
                                     }
 
                                     j_temp=j_temp+y;
@@ -705,7 +778,6 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                     if(udal_ruch&&moge_bic_2)
                                     while(game_2.bicie()&&moge_bic_2)  //dopoki zbilem, i mozna isc dalej i sie nie wracam
                                     {
-                                        std::cout<<"Ruch sie udal i mozna kontynuowac"<<std::endl;
                                         if(kontynuacja_ruchu==false) //gdy wchodze pierwszy raz do petli bicia seryjnego
                                         {
                                             dziecko_temp.clear();
@@ -733,12 +805,12 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                 {
                                                     game_2.zrob_damki();
                                                     game_2.zmien_gracza();
-                                                    ocena=minimax(game_2, depth);
+                                                    ocena=minimax(game_2,alpha,beta, depth-1);
                                                     if(game.zwroc_aktualny_gracz()==bialy)
-                                                        max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                                        max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
                                                     if(game.zwroc_aktualny_gracz()==czarny)
                                                         min_ocena=std::min(min_ocena, ocena); //jesli gramy jako czarny
-                                                    if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                                    if(min_ocena==ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                                     {
                                                         temp.x_s=j_temp;
                                                         temp.y_s=i_temp;
@@ -748,7 +820,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                         dziecko=dziecko_temp;
                                                         kontynuacja_ruchu=false;
                                                     }
-                                                    if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                                    if(max_ocena==ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                                     {
                                                         temp.x_s=j_temp;
                                                         temp.y_s=i_temp;
@@ -757,6 +829,24 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                                         dziecko_temp.push_back(temp); //dodaj parametry do naszego dziecka
                                                         dziecko=dziecko_temp;
                                                         kontynuacja_ruchu=false;
+                                                    }
+
+                                                    if(game.zwroc_aktualny_gracz()==bialy)
+                                                    {
+                                                        alpha=std::max(alpha, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            return dziecko;
+                                                        }
+                                                    }
+
+                                                    if(game.zwroc_aktualny_gracz()==czarny)
+                                                    {
+                                                        beta=std::min(beta, ocena);
+                                                        if(beta<=alpha)
+                                                        {
+                                                            return dziecko;
+                                                        }
                                                     }
                                                 }
 
@@ -800,14 +890,14 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                         kontynuacja_ruchu=false;
                                         game_2.zrob_damki();
                                         game_2.zmien_gracza();
-                                        ocena=minimax(game_2, depth);
+                                        ocena=minimax(game_2, alpha, beta, depth-1);
 
                                         if(game.zwroc_aktualny_gracz()==bialy)
-                                            max_ocena=std::max(min_ocena, ocena);  //jesli gramy jako bialy
+                                            max_ocena=std::max(max_ocena, ocena);  //jesli gramy jako bialy
                                         if(game.zwroc_aktualny_gracz()==czarny)
                                             min_ocena=std::min(min_ocena, ocena);
 
-                                        if(min_ocena<ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(min_ocena==ocena&&game.zwroc_aktualny_gracz()==czarny) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -816,7 +906,7 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             dziecko.clear();  //bo to zupelnie nowe dziecko na 100%
                                             dziecko.push_back(temp); //dodaj parametry do naszego dziecka
                                         }
-                                        if(max_ocena>ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
+                                        if(max_ocena==ocena&&game.zwroc_aktualny_gracz()==bialy) //jesli doszlo do zamiany, to nowe dziecko -> tworzymy parametry dziecka -> dodajemy do wektrora
                                         {
                                             temp.x_s=j_temp;
                                             temp.y_s=i_temp;
@@ -824,6 +914,24 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
                                             temp.y_k=i_temp+x;
                                             dziecko.clear();  //bo to zupelnie nowe dziecko na 100%
                                             dziecko.push_back(temp); //dodaj parametry do naszego dziecka
+                                        }
+
+                                        if(game.zwroc_aktualny_gracz()==bialy)
+                                        {
+                                            alpha=std::max(alpha, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
+                                        }
+
+                                        if(game.zwroc_aktualny_gracz()==czarny)
+                                        {
+                                            beta=std::min(beta, ocena);
+                                            if(beta<=alpha)
+                                            {
+                                                return dziecko;
+                                            }
                                         }
                                     }
                                 }
@@ -833,5 +941,4 @@ std::vector<parametry_ruchu> bot::ruch(gra game)
             }
         }
         return dziecko;
-
 }

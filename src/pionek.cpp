@@ -36,7 +36,7 @@ void pionek::xy_set(int xw, int yw)
 }
 
 
- void pionek::draw(sf::RenderTarget& target, sf::RenderStates state) const
+void pionek::draw(sf::RenderTarget& target, sf::RenderStates state) const
 {
     target.draw(this->sprite, state);
 }
