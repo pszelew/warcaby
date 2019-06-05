@@ -29,6 +29,7 @@ class pionek :public sf::Drawable
         pionek();
         pionek(kolory kol, int xw, int yw);
         rodzaj zwroc_rodzaj() const {return rodz;};
+        rodzaj set_rodzaj(rodzaj rodza) {rodz=rodza;};
         void ustaw_rodzaj(rodzaj rod);
         int x_zw()const {return x;};
         int y_zw()const {return y;} ;

@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <windows.h>
-#define ILOSC_ELEMENTOW 6
+#define ILOSC_ELEMENTOW 9
 #include <iostream>
 
 class pod_menu

@@ -43,6 +43,7 @@ class gra :public sf::Drawable
         void set_PC(bool pc){PC=pc;};
         bool zwroc_human(){return human;};
         void set_human(bool pc){human=pc;};
+        void reset(kolory kol);
         rodzaj zwroc_rodzaj(int xw, int yw){return tablica_pola[yw][xw].zwroc_rodzaj();};
         int zwroc_ilosc_bialych() const {return ilosc_bialych;};
         int zwroc_ilosc_czarnych() const {return ilosc_czarnych;};

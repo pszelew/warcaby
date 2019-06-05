@@ -46,10 +46,32 @@ pod_menu::pod_menu(float width, float height)
 
     text[5].setFont(font);
     text[5].setColor(sf::Color::White);
-    text[5].setString("POWROT");
+    text[5].setString("POZIOM 1");
     textRect = text[5].getLocalBounds();
     text[5].setOrigin(textRect.left + textRect.width/2.0f,textRect.top  + textRect.height/2.0f);
     text[5].setPosition(sf::Vector2f(width/2,height/(ILOSC_ELEMENTOW+1)*6));
+
+    text[6].setFont(font);
+    text[6].setColor(sf::Color::White);
+    text[6].setString("POZIOM 2");
+    textRect = text[6].getLocalBounds();
+    text[6].setOrigin(textRect.left + textRect.width/2.0f,textRect.top  + textRect.height/2.0f);
+    text[6].setPosition(sf::Vector2f(width/2,height/(ILOSC_ELEMENTOW+1)*7));
+
+    text[7].setFont(font);
+    text[7].setColor(sf::Color::White);
+    text[7].setString("POZIOM 3");
+    textRect = text[7].getLocalBounds();
+    text[7].setOrigin(textRect.left + textRect.width/2.0f,textRect.top  + textRect.height/2.0f);
+    text[7].setPosition(sf::Vector2f(width/2,height/(ILOSC_ELEMENTOW+1)*8));
+
+
+    text[8].setFont(font);
+    text[8].setColor(sf::Color::White);
+    text[8].setString("POWROT");
+    textRect = text[8].getLocalBounds();
+    text[8].setOrigin(textRect.left + textRect.width/2.0f,textRect.top  + textRect.height/2.0f);
+    text[8].setPosition(sf::Vector2f(width/2,height/(ILOSC_ELEMENTOW+1)*9));
 
     //ctor
 }

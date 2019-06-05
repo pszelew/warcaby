@@ -142,6 +142,8 @@ int bot::minimax(gra game, int alpha, int beta, int depth)  //gra przechowuje st
                                                 }
                                                 if(moge_bic_2&&udal_ruch) //jesli jeszze moge bic i ruch sie udal
                                                 {
+                                                    j_temp=j_temp+l;
+                                                    i_temp=i_temp+k;
                                                     kontynuacja_ruchu=true;
                                                 }
                                             }
@@ -298,6 +300,8 @@ int bot::minimax(gra game, int alpha, int beta, int depth)  //gra przechowuje st
 
                                                 if(moge_bic_2&&udal_ruch) //jesli jeszze moge bic i ruch sie udal
                                                 {
+                                                    j_temp=j_temp+l;
+                                                    i_temp=i_temp+k;
                                                     kontynuacja_ruchu=true;
                                                 }
 

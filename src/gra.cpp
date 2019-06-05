@@ -970,3 +970,68 @@ sf::Vector2i gra::wybierz_pole(sf::RenderWindow &window, sf::Vector2i wektor)
     tab.y=(wektor.y-30*skala)/(80*skala);
     return tab;
 }
+
+void gra::reset(kolory kol)
+{
+    if(zwroc_aktualny_gracz()==czarny)
+        zmien_gracza();
+
+    for(int i=0;i<8;i++)
+        for(int j=0;j<8;j++)
+        {
+            tablica_pola[i][j].kolor_set(brak);
+            tablica_pola[i][j].set_rodzaj(zwykly);
+
+        }
+
+
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<8;j++)
+            {
+            if(kol==czarny)
+            {
+                if((i%2==1&&j%2==0)||(i%2==0&&j%2==1))
+                {
+                    tablica_pola[i][j].kolor_set(bialy);
+                }
+            }
+
+            if(kol==bialy)
+            {
+                if((i%2==1&&j%2==0)||(i%2==0&&j%2==1))
+                {
+                    tablica_pola[i][j].kolor_set(czarny);
+                }
+            }
+        }
+    }
+
+
+
+
+    for(int i=7;i>=5;i--)
+    {
+        for(int j=0;j<8;j++)
+        {
+            if(kol==bialy)
+            {
+                if((i%2==1&&j%2==0)||(i%2==0&&j%2==1))
+                {
+                    tablica_pola[i][j].kolor_set(bialy);
+                }
+            }
+
+            if(kol==czarny)
+            {
+                if((i%2==1&&j%2==0)||(i%2==0&&j%2==1))
+                {
+                    tablica_pola[i][j].kolor_set(czarny);
+                }
+            }
+        }
+    }
+
+
+}
+

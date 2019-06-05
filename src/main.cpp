@@ -9,7 +9,8 @@
 #include <windows.h>
 #include <menu.h>
 #include <pod_menu.h>
-
+#include <chrono>
+#include <fstream>
 int main()
 {
     sf::Music music;
@@ -32,6 +33,15 @@ int main()
     bool menu=true;
     bool menu_2=false;
     kolory wygrana=brak;
+    sf::Texture tekstura;
+    sf::Sprite sprite;
+    std::fstream testy;
+    remove("testy_efektywnosci.txt");
+    long long czas=0;
+	testy.open( "testy_efektywnosci.txt", std::ios::out|std::ios::app);
+    std::chrono::high_resolution_clock::time_point t1;
+    std::chrono::high_resolution_clock::time_point t2;
+
 
     bot bot_warcaby(czarny);
     gra game(bialy, false); //gra bez bota
@@ -41,10 +51,47 @@ int main()
     sf::Vector2i localPosition;
     std::vector<parametry_ruchu> lista_ruchow;
 
+    tekstura.loadFromFile( "img/Start.png" );
+    sprite.setTexture(tekstura);
+    window.draw(sprite);
+    window.display();
+    Sleep(6000);
+
     while(window.isOpen())
     {
+
+            if(game.zwroc_human()==false||(game.zwroc_PC()&&game.zwroc_aktualny_gracz()==bot_warcaby.zwroc_kolor_bota())) //jesli gramy z botem i jest ruch bota
+            {
+                    window.draw(plan);
+                    window.draw(game);
+                    window.display();
+
+                    t1 = std::chrono::high_resolution_clock::now();
+                    lista_ruchow=bot_warcaby.ruch(game, INT_MIN, INT_MAX);  //wykonuje puste ruchy
+                    t2 = std::chrono::high_resolution_clock::now();
+                    testy <<czas<<std::endl;
+                    for( int i = 0; i < lista_ruchow.size() ; i++ )
+                    {
+                        moge_bic=game.czy_mam_bicie(lista_ruchow[i].x_s, lista_ruchow[i].y_s);
+                        game.ruch(lista_ruchow[i].x_s, lista_ruchow[i].y_s, lista_ruchow[i].x_k, lista_ruchow[i].y_k, moge_bic);
+                        czas=std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+                        std::cout<<lista_ruchow[i].x_s<<", "<<lista_ruchow[i].y_s<<" <- Wykonalem ruch ->"<<lista_ruchow[i].x_k<<", "<<lista_ruchow[i].y_k<<std::endl;
+                        if(i<lista_ruchow.size()-1)
+                            Sleep(1000);
+                    }
+                    std::cout<<"Liczba bialych "<< game.zwroc_ilosc_bialych()<<std::endl;
+                    std::cout<<"Liczba czarnych "<< game.zwroc_ilosc_czarnych()<<std::endl;
+                    game.zrob_damki();
+                    game.zmien_gracza();
+
+                    window.draw(plan);
+                    window.draw(game);
+                    window.display();
+                    Sleep(1000);
+            }
+
             sf::Event zdarzenie;
-             while(!menu_2&&menu&&window.pollEvent(zdarzenie)) //jesli jestesmy w menu
+            while(!menu_2&&menu&&window.pollEvent(zdarzenie)) //jesli jestesmy w menu
             {
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Left)&&!selected_2)
                 {
@@ -97,6 +144,15 @@ int main()
                             bot_warcaby.set_kolor_bota(czarny);
                             break;
                         case 5:
+                            bot_warcaby.set_depth(1);
+                            break;
+                        case 6:
+                            bot_warcaby.set_depth(2);
+                            break;
+                        case 7:
+                            bot_warcaby.set_depth(3);
+                            break;
+                        case 8:
                             menu_2=false;
                             menu=true;
                             break;
@@ -109,34 +165,19 @@ int main()
             while(!menu_2&&!menu&&window.pollEvent(zdarzenie))  //jesli nie jestesmy w menu
             {
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-                    window.close();
+                {
+                    game.reset(bialy);
+                    menu=true;
+                    menu_2=false;
+                }
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+                {
+                    game.reset(bialy);
+                }
+
                 if(zdarzenie.type==sf::Event::Closed)
                             window.close();
-                if(game.zwroc_human()==false||(game.zwroc_PC()&&game.zwroc_aktualny_gracz()==bot_warcaby.zwroc_kolor_bota())) //jesli gramy z botem i jest ruch bota
-                {
-                    window.draw(plan);
-                    window.draw(game);
-                    window.display();
-                    lista_ruchow=bot_warcaby.ruch(game, INT_MIN, INT_MAX);  //wykonuje puste ruchy
-                    for( int i = 0; i < lista_ruchow.size() ; i++ )
-                    {
-                        moge_bic=game.czy_mam_bicie(lista_ruchow[i].x_s, lista_ruchow[i].y_s);
-                        game.ruch(lista_ruchow[i].x_s, lista_ruchow[i].y_s, lista_ruchow[i].x_k, lista_ruchow[i].y_k, moge_bic);
 
-                        std::cout<<lista_ruchow[i].x_s<<", "<<lista_ruchow[i].y_s<<" <- Wykonalem ruch ->"<<lista_ruchow[i].x_k<<", "<<lista_ruchow[i].y_k<<std::endl;
-                        if(i<lista_ruchow.size()-1)
-                            Sleep(1000);
-                    }
-                    std::cout<<"Liczba bialych "<< game.zwroc_ilosc_bialych()<<std::endl;
-                    std::cout<<"Liczba czarnych "<< game.zwroc_ilosc_czarnych()<<std::endl;
-                    game.zrob_damki();
-                    game.zmien_gracza();
-
-                    window.draw(plan);
-                    window.draw(game);
-                    window.display();
-                    Sleep(1000);
-                }
 
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Left)&&!selected)
                 {

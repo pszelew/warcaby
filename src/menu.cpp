@@ -16,14 +16,14 @@ menu::menu(float width, float height)
 
     text[1].setFont(font);
     text[1].setColor(sf::Color::White);
-    text[1].setString("Options");
+    text[1].setString("Opcje");
     textRect = text[1].getLocalBounds();
     text[1].setOrigin(textRect.left + textRect.width/2.0f,textRect.top  + textRect.height/2.0f);
     text[1].setPosition(sf::Vector2f(width/2,height/(ILOSC_ELEMENTOW+1)*2));
 
     text[2].setFont(font);
     text[2].setColor(sf::Color::White);
-    text[2].setString("Exit");
+    text[2].setString("Wyjdz");
     textRect = text[2].getLocalBounds();
     text[2].setOrigin(textRect.left + textRect.width/2.0f,textRect.top  + textRect.height/2.0f);
     text[2].setPosition(sf::Vector2f(width/2,height/(ILOSC_ELEMENTOW+1)*3));

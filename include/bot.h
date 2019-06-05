@@ -20,6 +20,7 @@ class bot
         virtual ~bot();
         kolory zwroc_kolor_bota(){return kolor_bota;};
         void set_kolor_bota(kolory kol){kolor_bota=kol;};
+        void set_depth(int dep){max_depth=dep;};
         std::vector<parametry_ruchu> ruch(gra game, int alpha, int beta);  //funkcja zwraca optymalny ruch, jaki wykonuje komputer. Pobiera aktualny stan gry
 };
 
